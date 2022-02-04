@@ -490,7 +490,10 @@ else
 fi
 
 servicePrincipal=$(echo $sp |awk '{print $1}')
-clientSecret=$(echo $sp |awk '{print $4}')
+
+# This needed to be changed to used client secret value instead of client secret id
+#clientSecret=$(echo $sp |awk '{print $4}')
+clientSecret=$(echo $sp |awk '{print $3}')
 
 if [[ -z ${servicePrincipal}  ]] || [[ -z ${clientSecret}  ]] ;
 then
@@ -591,6 +594,9 @@ else
     echo "INFO:reporter:lastest already existing in acr...."
 fi
 
+
+# need to add attach-acr to the az aks create commmand
+
 if [ ! -z ${vnetName} ]; then
     ## assign role to SP
     az role assignment create --assignee $servicePrincipal --scope $VNET_ID --role Contributor
@@ -612,7 +618,8 @@ if [ ! -z ${vnetName} ]; then
                 --disable-rbac \
                 --node-vm-size Standard_D2s_v3 \
                 --location $location \
-                --vnet-subnet-id $SUBNET_ID
+                --vnet-subnet-id $SUBNET_ID \
+                --attach-acr $acrName
 
         if [ $? -ne 0 ]
         then
@@ -633,7 +640,8 @@ if [ ! -z ${vnetName} ]; then
                 --disable-rbac \
                 --node-vm-size Standard_D2s_v3 \
                 --location $location \
-                --vnet-subnet-id $SUBNET_ID
+                --vnet-subnet-id $SUBNET_ID \
+                --attach-acr $acrName
 
         if [ $? -ne 0 ]
         then
@@ -657,7 +665,8 @@ else
         --generate-ssh-keys \
 	    --disable-rbac \
 	    --node-vm-size Standard_D2s_v3 \
-	    --location $location
+	    --location $location \
+        --attach-acr $acrName
 
     if [ $? -ne 0 ]
         then
