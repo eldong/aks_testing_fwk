@@ -6,7 +6,7 @@
 #------------------------------------------------------------------
 
 # Variables
-
+set -x 
 # SubscriptionId of the current subscription
 subscriptionId=$(az account show --query id --output tsv)
 logfile=./testfwklog
@@ -119,15 +119,15 @@ display_help() {
 }
 
 #sp check
-sp_check() {
-spId=$(az ad sp list --display-name $spname -o tsv --query [].appId)
-if [[ -z ${spId}  ]]; then
-    echo "INFO:Service Principal - $spname a does not exist...."
-else
-    echo "INFO:Service Principal - $spname already exists...."
-    echo "INFO:Please choose altenative name"
-fi
-}
+#sp_check() {
+#spId=$(az ad sp list --display-name $spname -o tsv --query [].appId)
+#if [[ -z ${spId}  ]]; then
+#    echo "INFO:Service Principal - $spname a does not exist...."
+#else
+#    echo "INFO:Service Principal - $spname already exists...."
+#    echo "INFO:Please choose altenative name"
+#fi
+#}
 
 # kubectl check
 kube_check() {
@@ -158,42 +158,42 @@ cluster_check() {
 clean_up() {
 
     #remove resource group
-    if ! az group show --name "$resourceGroup" &>/dev/null; then
-        echo "ERROR:No [ $resourceGroup ] resource group actually exists in the [ $subscriptionId ] subscription"
-        echo ""
-        exit 1
-    else
-        echo "INFO: deleting resource group..."
-        if [ ! -z $fwkrg ];then
-            if az group delete --name "$fwkrg" -y --no-wait  1>/dev/null; then
-                echo "INFO:[ $fwkrg ] will be deleted from the [ $subscriptionId ] subscription. Please check for full removal"
-            else
-                echo "ERROR: Failed to delete [ $fwkrg ] resource group in the [ $subscriptionId ] subscription.  Please delete manually"
-                exit 1
-            fi
-        else
-            if [ $rgcreate == 'true' ];then
-                if az group delete --name "$resourceGroup" -y --no-wait  1>/dev/null; then
-                    echo "INFO:[ $resourceGroup ] will be deleted from the [ $subscriptionId ] subscription. Please check for full removal"
-                else
-                    echo "ERROR: Failed to delete [ $resourceGroup ] resource group in the [ $subscriptionId ] subscription.  Please delete manually"
-                    exit 1
-                fi
-            fi
-        fi
-    fi
+#    if ! az group show --name "$resourceGroup" &>/dev/null; then
+#        echo "ERROR:No [ $resourceGroup ] resource group actually exists in the [ $subscriptionId ] subscription"
+#        echo ""
+#        exit 1
+#    else
+#        echo "INFO: deleting resource group..."
+#        if [ ! -z $fwkrg ];then
+#            if az group delete --name "$fwkrg" -y --no-wait  1>/dev/null; then
+#                echo "INFO:[ $fwkrg ] will be deleted from the [ $subscriptionId ] subscription. Please check for full removal"
+#            else
+#                echo "ERROR: Failed to delete [ $fwkrg ] resource group in the [ $subscriptionId ] subscription.  Please delete manually"
+#                exit 1
+#            fi
+#        else
+#            if [ $rgcreate == 'true' ];then
+#                if az group delete --name "$resourceGroup" -y --no-wait  1>/dev/null; then
+#                    echo "INFO:[ $resourceGroup ] will be deleted from the [ $subscriptionId ] subscription. Please check for full removal"
+#                else
+#                    echo "ERROR: Failed to delete [ $resourceGroup ] resource group in the [ $subscriptionId ] subscription.  Please delete manually"
+#                    exit 1
+#                fi
+#            fi
+#        fi
+#    fi
 
 #remove the SP
     #get the sp id
-    echo "INFO:retrieving Service Principal Id for $spname"
-    servicePrincipalId=$(az ad sp list --display-name $spname -o tsv --query [].appId)
-    echo "INFO: Service Principal ID is:"$servicePrincipalId
-    if az ad sp delete --id "$servicePrincipalId" 1>/dev/null; then
-        echo "INFO: Service Principal deleted...."
-    else
-        echo "ERROR: Failed to delete service Principal with name $spname and ID [ $servicePrincipalId ].  Please delete manually"
-        exit 1
-    fi
+#    echo "INFO:retrieving Service Principal Id for $spname"
+#    servicePrincipalId=$(az ad sp list --display-name $spname -o tsv --query [].appId)
+#    echo "INFO: Service Principal ID is:"$servicePrincipalId
+#    if az ad sp delete --id "$servicePrincipalId" 1>/dev/null; then
+#        echo "INFO: Service Principal deleted...."
+#    else
+#        echo "ERROR: Failed to delete service Principal with name $spname and ID [ $servicePrincipalId ].  Please delete manually"
+#        exit 1
+#    fi
 
 #remove the updated template files
 if [ -f ../deploy/jslave.yaml ]; then
@@ -465,84 +465,84 @@ fi
 echo "INFO: suffix used is: "$suffix
 #suffix=$(echo $RANDOM % 1000 + 1 |bc)
 acrbase="testframeworkacr"
-acrName=$acrbase$suffix
+#acrName=$acrbase$suffix
 #AKS cluster name
 aksbase="jmeteraks-"
-aksName=$aksbase$suffix
+#aksName=$aksbase$suffix  // this 
 
 
 #create the required service principal to use with AKS / ACR
 # do this first to prevent acr creation if sp is not correct...
-spId=$(az ad sp list --display-name $spname -o tsv --query [].appId)
-if [[ -z ${spId}  ]]; then
-    echo "Service Principal does not exist...."
-    echo "Creating Service Principal..."
-    sp=$(az ad sp create-for-rbac -n $spname -o tsv)
-    if [ $? -ne 0 ]
-        then
-            echo "Failed to create service principal, error: '${?}'"
-            exit 1
-    fi
-else
-    echo "Service Principal - $spname already exists...."
-    echo "please choose altenative name"
-    exit 1
-fi
+#spId=$(az ad sp list --display-name $spname -o tsv --query [].appId)
+#if [[ -z ${spId}  ]]; then
+#    echo "Service Principal does not exist...."
+#    echo "Creating Service Principal..."
+#    sp=$(az ad sp create-for-rbac -n $spname -o tsv)
+#    if [ $? -ne 0 ]
+#        then
+#            echo "Failed to create service principal, error: '${?}'"
+#            exit 1
+#    fi
+#else
+#    echo "Service Principal - $spname already exists...."
+#    echo "please choose altenative name"
+#    exit 1
+#fi
 
-servicePrincipal=$(echo $sp |awk '{print $1}')
+#servicePrincipal=$(echo $sp |awk '{print $1}')
 
 # This needed to be changed to used client secret value instead of client secret id
 #clientSecret=$(echo $sp |awk '{print $4}')
-clientSecret=$(echo $sp |awk '{print $3}')
+#clientSecret=$(echo $sp |awk '{print $3}')
 
-if [[ -z ${servicePrincipal}  ]] || [[ -z ${clientSecret}  ]] ;
-then
-    echo "ERROR: Service Principal credentials have not been retrieved exiting...."
-    exit 1
-else
-    echo "INFO:Service Principal credentials have been created....."
-fi
+#if [[ -z ${servicePrincipal}  ]] || [[ -z ${clientSecret}  ]] ;
+#then
+#    echo "ERROR: Service Principal credentials have not been retrieved exiting...."
+#    exit 1
+#else
+#    echo "INFO:Service Principal credentials have been created....."
+#fi
 
 
 ##create acr to use to store containers
-if [[ ! -z ${fwkrg} ]]; then
-        echo "Info - Using supplied fwk resource group name"
-        acrCheck=$(az acr check-name --name $acrName -o tsv --query nameAvailable)
-        if [ $acrCheck == "true" ]; then
-            echo "INFO:Container registry [ $acrName ] does not exist...."
-            echo "INFO:Creating container registry..."
-            echo "DEBUG: az acr create --name "$acrName" --resource-group "$fwkrg" --sku Basic --admin-enabled true"
-            az acr create --name $acrName --resource-group $fwkrg --sku Basic --admin-enabled true
-            if [ $? -ne 0 ]
-                then
-                    echo "ERROR: Failed to create container registry in the resource group [ $fwkrg ] "
-                    exit 1
-                else
-                    echo "INFO: Acr $acrName created"
-            fi
-        else
-            echo "Container registry [ $acrName ] already exists...."
-            exit 1
-        fi
-else
-acrCheck=$(az acr check-name --name $acrName -o tsv --query nameAvailable)
-if [ $acrCheck == "true" ]; then
-    echo "INFO:Container registry [ $acrName ] does not exist...."
-    echo "INFO:Creating container registry..."
-    echo "DEBUG: az acr create --name "$acrName" --resource-group "$resourceGroup" --sku Basic --admin-enabled true"
-    az acr create --name $acrName --resource-group $resourceGroup --sku Basic --admin-enabled true
-    if [ $? -ne 0 ]
-        then
-            echo "ERROR: Failed to create container registry in the resource group [ $resourceGroup ] "
-            exit 1
-        else
-            echo "INFO: Acr $acrName created"
-    fi
-else
-    echo "Container registry [ $acrName ] already exists...."
-    exit 1
-fi
-fi
+#if [[ ! -z ${fwkrg} ]]; then
+#        echo "Info - Using supplied fwk resource group name"
+#        acrCheck=$(az acr check-name --name $acrName -o tsv --query nameAvailable)
+#        if [ $acrCheck == "true" ]; then
+#            echo "INFO:Container registry [ $acrName ] does not exist...."
+#            echo "INFO:Creating container registry..."
+#            echo "DEBUG: az acr create --name "$acrName" --resource-group "$fwkrg" --sku Basic --admin-enabled true"
+#            az acr create --name $acrName --resource-group $fwkrg --sku Basic --admin-enabled true
+#            if [ $? -ne 0 ]
+#                then
+#                    echo "ERROR: Failed to create container registry in the resource group [ $fwkrg ] "
+#                    exit 1
+#                else
+#                    echo "INFO: Acr $acrName created"
+#            fi
+#        else
+#            echo "Container registry [ $acrName ] already exists...."
+#            exit 1
+#        fi
+#else
+#acrCheck=$(az acr check-name --name $acrName -o tsv --query nameAvailable)
+#if [ $acrCheck == "true" ]; then
+#    echo "INFO:Container registry [ $acrName ] does not exist...."
+#    echo "INFO:Creating container registry..."
+#    echo "DEBUG: az acr create --name "$acrName" --resource-group "$resourceGroup" --sku Basic --admin-enabled true"
+#    az acr create --name $acrName --resource-group $resourceGroup --sku Basic --admin-enabled true
+#    if [ $? -ne 0 ]
+#        then
+#            echo "ERROR: Failed to create container registry in the resource group [ $resourceGroup ] "
+#            exit 1
+#        else
+#            echo "INFO: Acr $acrName created"
+#    fi
+#else
+#    echo "Container registry [ $acrName ] already exists...."
+#    exit 1
+#fi
+#fi
 
 
 
@@ -607,11 +607,13 @@ if [ ! -z ${vnetName} ]; then
     if [ ! -z ${fwkrg} ]; then
         az aks create \
                 --resource-group $fwkrg \
-                --name $aksName \
+                --node-resource-group $noderg \
+                --name $clustername \
                 --node-count 3 \
-                --service-principal $servicePrincipal \
-                --client-secret $clientSecret \
+                --enable-managed-identity \
+                --assign-identity $identity \
                 --enable-cluster-autoscaler \
+                --vnet-subnet-id $vnetsubnetid \
                 --min-count 1 \
                 --max-count 50 \
                 --generate-ssh-keys \
@@ -619,6 +621,9 @@ if [ ! -z ${vnetName} ]; then
                 --node-vm-size Standard_D2s_v3 \
                 --location $location \
                 --vnet-subnet-id $SUBNET_ID \
+                --enable-private-cluster \
+                --outbound-type userDefinedRouting \
+                --network-plugin kubenet \
                 --attach-acr $acrName
 
         if [ $? -ne 0 ]
@@ -628,12 +633,14 @@ if [ ! -z ${vnetName} ]; then
         fi
     else
         az aks create \
-                --resource-group $resourceGroup \
-                --name $aksName \
+                --resource-group $fwkrg \
+                --node-resource-group $noderg \
+                --name $clustername \
                 --node-count 3 \
-                --service-principal $servicePrincipal \
-                --client-secret $clientSecret \
+                --enable-managed-identity \
+                --assign-identity $identity \
                 --enable-cluster-autoscaler \
+                --vnet-subnet-id $vnetsubnetid \
                 --min-count 1 \
                 --max-count 50 \
                 --generate-ssh-keys \
@@ -641,6 +648,9 @@ if [ ! -z ${vnetName} ]; then
                 --node-vm-size Standard_D2s_v3 \
                 --location $location \
                 --vnet-subnet-id $SUBNET_ID \
+                --enable-private-cluster \
+                --outbound-type userDefinedRouting \
+                --network-plugin kubenet \
                 --attach-acr $acrName
 
         if [ $? -ne 0 ]
@@ -653,20 +663,26 @@ else
     echo "INFO: Framework Deployment will be without a Vnet"
     ##create default AKS cluster with node size Standard_D2s_V3
     echo "INFO:Creating AKS cluster $aksName with D2s_v3 nodes...."
-    az aks create \
-        --resource-group $resourceGroup \
-        --name $aksName \
-        --node-count 3 \
-        --service-principal $servicePrincipal \
-        --client-secret $clientSecret \
-        --enable-cluster-autoscaler \
-        --min-count 1 \
-        --max-count 50 \
-        --generate-ssh-keys \
-	    --disable-rbac \
-	    --node-vm-size Standard_D2s_v3 \
-	    --location $location \
-        --attach-acr $acrName
+        az aks create \
+                --resource-group $fwkrg \
+                --node-resource-group $noderg \
+                --name $clustername \
+                --node-count 3 \
+                --enable-managed-identity \
+                --assign-identity $identity \
+                --enable-cluster-autoscaler \
+                --vnet-subnet-id $vnetsubnetid \
+                --min-count 1 \
+                --max-count 50 \
+                --generate-ssh-keys \
+                --disable-rbac \
+                --node-vm-size Standard_D2s_v3 \
+                --location $location \
+                --vnet-subnet-id $SUBNET_ID \
+                --enable-private-cluster \
+                --outbound-type userDefinedRouting \
+                --network-plugin kubenet \
+                --attach-acr $acrName
 
     if [ $? -ne 0 ]
         then
@@ -707,6 +723,9 @@ install )
                     (g)
                         resourceGroup=$OPTARG
                         ;;
+                    (i)
+                        identity=$OPTARG
+                        ;;
                     (l)
                         location=$OPTARG
                         ;;
@@ -721,11 +740,26 @@ install )
                         ;;
                     (-)
 						case "${OPTARG}" in
+                			aksname)
+                    			aksName="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    			;;
+                			acrname)
+                    			acrName="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    			;;
                 			vnetname)
                     			vnetName="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
                     			;;
                 			subnetname)
                     			subnetName="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    			;;
+                			vnetsubnetid)
+                    			vnetsubnetid="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    			;;
+                			useridentity)
+                    			identity="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    			;;
+                			noderg)
+                    			noderg="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
                     			;;
                             fwkrg)
                     			fwkrg="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
@@ -751,7 +785,8 @@ install )
         done
     shift $((OPTIND -1))
 
-    if [[ -z ${resourceGroup}  ]] || [[ -z ${location}  ]] || [[ -z ${spname}  ]] ;then
+#    if [[ -z ${resourceGroup}  ]] || [[ -z ${location}  ]] || [[ -z ${spname}  ]] ;then
+    if [[ -z ${resourceGroup}  ]] || [[ -z ${location}  ]] ;then
         echo "ERROR:Resource Group,location and spname must be provided"
         exit 1
     else
@@ -801,10 +836,10 @@ install )
     #check for resource group and create if not existing
     rg_check
     #check vnet setup/requrirement if provided
-    if [ $vnetName ]; then
-        echo "INFO: Vnet setup"
-        vnet_check
-    fi
+    #if [ $vnetName ]; then
+    #    echo "INFO: Vnet setup"
+    #    vnet_check
+    #fi
     #create sp and AKS cluster
     fwk_install
     dt=$(date +"%d/%m %T")
