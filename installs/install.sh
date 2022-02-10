@@ -635,7 +635,7 @@ if [ ! -z ${vnetName} ]; then
         az aks create \
                 --resource-group $fwkrg \
                 --node-resource-group $noderg \
-                --name $clustername \
+                --name $aksName \
                 --node-count 3 \
                 --enable-managed-identity \
                 --assign-identity $identity \
@@ -662,11 +662,11 @@ if [ ! -z ${vnetName} ]; then
 else
     echo "INFO: Framework Deployment will be without a Vnet"
     ##create default AKS cluster with node size Standard_D2s_V3
-    echo "INFO:Creating AKS cluster $aksName with D2s_v3 nodes...."
+    echo "INFO: 3 Creating AKS cluster $aksName with D2s_v3 nodes...."
         az aks create \
-                --resource-group $fwkrg \
+                --resource-group $resourceGroup \
                 --node-resource-group $noderg \
-                --name $clustername \
+                --name $aksName \
                 --node-count 3 \
                 --enable-managed-identity \
                 --assign-identity $identity \
@@ -678,7 +678,6 @@ else
                 --disable-rbac \
                 --node-vm-size Standard_D2s_v3 \
                 --location $location \
-                --vnet-subnet-id $SUBNET_ID \
                 --enable-private-cluster \
                 --outbound-type userDefinedRouting \
                 --network-plugin kubenet \
