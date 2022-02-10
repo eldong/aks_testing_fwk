@@ -216,6 +216,7 @@ kube_install(){
 ###get creds
 if [ ! -z $fwkrg ];then
     if az aks get-credentials --resource-group $fwkrg --name $aksName --overwrite-existing &>/dev/null; then
+        cp /mnt/c/Users/jumpboxadmin/.kube/config ~/.kube
         nodes=$(kubectl get nodes |awk '/aks-nodepool/ {print $1}')
             if [[ -z {$nodes} ]]; then
                 echo "issue with kubectl setup"
@@ -229,6 +230,7 @@ if [ ! -z $fwkrg ];then
     fi
 else
     if az aks get-credentials --resource-group $resourceGroup --name $aksName --overwrite-existing &>/dev/null; then
+        cp /mnt/c/Users/jumpboxadmin/.kube/config ~/.kube
         nodes=$(kubectl get nodes |awk '/aks-nodepool/ {print $1}')
             if [[ -z {$nodes} ]]; then
                 echo "issue with kubectl setup"
