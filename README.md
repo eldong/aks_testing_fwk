@@ -2,6 +2,11 @@
 
 ### Latest Version: 1.5
 
+### Notes on this fork
+The changes here are being do to allow this to be deployed to a private aks cluster in the gov cloud.
+- update the ACR names to use '.us' instead of '.io'
+- update the aks create command to use private cluster
+
 ## Introduction
 This Jmeter based testing framework provides a scalable test harness to support load testing of applications using Apache Jmeter<sup>TM</sup>  based test scripts.  The framework excludes support for writing a Jmeter test plan but assumes a test plan in the form of a jmx files is available.  The testing framework utilizes a master Jmeter node with one or more slave nodes used to run the tests.  The deployment assumes a Jmeter backend listener is configured within the test plan to support writing metrics to the Influx database which can then be presented via a Grafana dashboard.  The initial deployment only deploys a single jmeter-slave pod but can be scaled as needed to support the required number of client threads.
 
